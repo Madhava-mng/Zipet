@@ -1,0 +1,120 @@
+#!/usr/bin/python3
+from zipfile import ZipFile as __zip_ex__
+from sys import argv as __Arg__
+from itertools import product 
+from sys import exc_info
+from os import path 
+from argparse import ArgumentParser as __Argument__
+print("""\u001b[34;1m
+    ╔════╗╔══╗╔═══╗╔═══╗╔════╗
+    ╚══╗═║╚╣─╝║╔═╗║║╔══╝║╔╗╔╗║
+    ──╔╝╔╝─║║─║╚═╝║║╚══╗╚╝║║╚╝
+    ─╔╝╔╝──║║─║╔══╝║╔══╝──║║──
+    ╔╝═╚═╗╔╣─╗║║───║╚══╗──║║──
+    ╚════╝╚══╝╚╝───╚═══╝──╚╝──
+                                """)
+print("\u001b[37;1m")
+_a_=__Argument__(description="""\u001b[31;1mdes: zipet is a zip_cracker""",epilog="\u001b[33;1mEg: zipet -f test.zip -w wordlist.txt\u001b[0m")
+_ra_=_a_.add_argument_group("\u001b[31;4;1mRequired Arguments\u001b[0m\u001b[31;1m")
+_ra_.add_argument("-f","--file",required=True,dest="zip",help="Specify zip file",type=str)
+_a_.add_argument("-w","--wordlist",dest="wordlist",help="Specify wordlist\u001b[0m",type=str)
+_arg_=_a_.parse_args()
+___wordlist___=_arg_.wordlist
+___zip___=_arg_.zip
+__passwd__={1:"seciret",2:"secreht",3:"not"}
+_break_=0
+try:
+    __filename__=___zip___
+except:
+    __filename__=None
+try:
+    _wordlist_=___wordlist___
+except:
+    _wordlist_=None
+    
+def __print__(a,__filename__,_method_):
+    _len1_=len(a)
+    _len2_=len(__filename__)
+    _len3_=len(_method_)
+    _min1_="-"
+    _min2_="-"
+    _min3_="-"
+    _spc1_=" "
+    _spc2_=" "
+    _spc3_=" "
+    _min1_*=_len1_
+    _min2_*=_len2_
+    _min3_*=_len3_
+    _spc1_*=_len1_
+    _spc2_*=_len2_
+    _spc3_*=_len3_
+    print("""+-{__min2__}---+----{__min1__}----+----{__min3__}----+
+|{N}{R}Name{__spc2__}{N}|{R}Password{__spc1__}{N}|{R}Found_by{__spc3__}{N}|
++-{__min2__}---+----{__min1__}----+----{__min3__}----+
+|{:^{__len2__}}    |{G}{:^{__len1__}}{N}        |{:^{__len3__}}        |     
++-{__min2__}---+----{__min1__}----+----{__min3__}----+""".format(__filename__,a,_method_,__min1__=_min1_,__min2__=_min2_,__min3__=_min3_,__spc1__=_spc1_,__spc2__=_spc2_,__spc3__=_spc3_,__len1__=_len1_,__len2__=_len2_,__len3__=_len3_,G="\u001b[32;4m",R="\u001b[31;1m",N="\u001b[0m"))
+
+def __do__(__passwd__,__filename__,_break_): 
+    for i in __passwd__:
+        try:
+            __zipf__=__zip_ex__(__filename__)
+            __zipf__.extractall(pwd=bytes(__passwd__[i].encode("utf-8")))
+            _break_=1
+            __print__(__passwd__[i],__filename__,"Default")
+        except:
+            pass
+        if _break_ == 1:
+            exit()
+
+def __iteration__(__filename__,_break_):
+    __chr__="0987654321abcdefghijklmnopqrstuvwxyz"
+    for i in range(0,10):
+        for j in product(__chr__ ,repeat=i):
+            _passwd_="".join(j)
+            try:
+                __zipf__=__zip_ex__(__filename__)
+                __zipf__.extractall(pwd=bytes(_passwd_.encode("utf-8")))
+                _break_=1
+                __print__(_passwd_,__filename__,"Iteration")
+            except:
+                pass
+            if _break_ == 1:
+                exit()
+
+def __wordlist__(_wordlist_,__filename__,_break_):
+    _wordlistfile_=open(_wordlist_,"r")
+    __words__=_wordlistfile_
+    for _passwd_ in __words__:
+        _passwd_=_passwd_.replace("\n","")
+        try:
+            __zipf__=__zip_ex__(__filename__)
+            __zipf__.extractall(pwd=bytes(_passwd_.encode("utf-8")))
+            _break_=1
+            __print__(_passwd_,__filename__,"Wordlist")
+        except:
+            pass
+        if _break_  == 1:
+            exit()    
+try:
+    if path.isfile(__filename__):
+        if __filename__[-4:] == ".zip":
+            if _break_ == 0:
+                __do__(__passwd__,__filename__,_break_)
+            if _break_ == 0:
+                if _wordlist_ != None:
+                    if path.isfile(_wordlist_):
+                        __wordlist__(_wordlist_,__filename__,_break_)
+                    else:
+                        print("[{R}!{N}] Wordlist File '{}' Not Found".format(_wordlist_,R="\u001b[31m",N="\u001b[0m"))
+                        exit()
+            if _break_ == 0:
+                if __filename__ != None:
+                    __iteration__(__filename__,_break_)
+        else:
+            print("[{R}!{N}] Invalied Zip file '{}' ".format(__filename__,R="\u001b[31m",N="\u001b[0m"))
+            exit()
+    else:
+        print("[{R}!{N}]  Zip File '{}' Not Found".format(__filename__,R="\u001b[31m",N="\u001b[0m"))
+        exit()
+except:
+    pass
